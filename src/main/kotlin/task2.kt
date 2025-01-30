@@ -1,17 +1,7 @@
 import java.io.File
 
 fun main() {
-    val wordsFile = File("words.txt")
-    val dictionary = mutableListOf<Word>()
-    fun loadDictionary(): MutableList<Word> {
-        wordsFile.forEachLine { line ->
-            val line = line.split("|")
-            val word =
-                Word(origin = line[0], translate = line[1], correctAnswerCount = line.getOrNull(2)?.toIntOrNull() ?: 0)
-            dictionary.add(word)
-        }
-        return dictionary
-    }
+
 
     while (true) {
         println(
@@ -36,3 +26,14 @@ data class Word(
     val origin: String,
     val translate: String,
 )
+val dictionary = mutableListOf<Word>()
+val wordsFile = File("words.txt")
+fun loadDictionary(): MutableList<Word> {
+    wordsFile.forEachLine { line ->
+        val line = line.split("|")
+        val word =
+            Word(origin = line[0], translate = line[1], correctAnswerCount = line.getOrNull(2)?.toIntOrNull() ?: 0)
+        dictionary.add(word)
+    }
+    return dictionary
+}
