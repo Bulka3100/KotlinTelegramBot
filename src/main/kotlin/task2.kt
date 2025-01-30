@@ -1,7 +1,7 @@
 import java.io.File
 
 fun main() {
-    val dictionaryNonMutable = dictionary
+    val dictionaryNonMutable = dictionary.toList()
 
     while (true) {
         println(
