@@ -1,7 +1,7 @@
 import java.io.File
 
 fun main() {
-
+    val dictionaryNonMutable = dictionary
 
     while (true) {
         println(
@@ -26,7 +26,9 @@ data class Word(
     val origin: String,
     val translate: String,
 )
+
 val dictionary = mutableListOf<Word>()
+
 val wordsFile = File("words.txt")
 fun loadDictionary(): MutableList<Word> {
     wordsFile.forEachLine { line ->
