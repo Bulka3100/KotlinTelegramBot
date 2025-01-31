@@ -1,7 +1,8 @@
+import Word
 import java.io.File
+import kotlin.collections.mutableListOf
 
 fun main() {
-    val dictionaryNonMutable = dictionary.toList()
 
     while (true) {
         println(
@@ -27,15 +28,16 @@ data class Word(
     val translate: String,
 )
 
-val dictionary = mutableListOf<Word>()
-
-val wordsFile = File("words.txt")
-fun loadDictionary(): MutableList<Word> {
+v
+fun loadDictionary(): List<Word> {
+    val dictionary = mutableListOf<Word>()
+    val wordsFile = File("words.txt")
     wordsFile.forEachLine { line ->
         val line = line.split("|")
         val word =
             Word(origin = line[0], translate = line[1], correctAnswerCount = line.getOrNull(2)?.toIntOrNull() ?: 0)
         dictionary.add(word)
     }
-    return dictionary
+    val nonMutableDictionary = dictionary.toList()
+    return nonMutableDictionary
 }
