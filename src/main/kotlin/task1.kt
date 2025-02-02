@@ -39,6 +39,7 @@ fun loadDictionary(): List<Word> {
     }
     return dictionary.toList()
 }
-val learned = loadDictionary().filter { it.correctAnswerCount>=3 }.size
+
+val learned = loadDictionary().filter { it.correctAnswerCount >= 3 }.size
 val allWords = loadDictionary().size
-val percent = loadDictionary().filter { it.correctAnswerCount>=3 }.size.toDouble()/loadDictionary().size.toDouble()*100
+val percent = loadDictionary().filter { it.correctAnswerCount >= 3 }.size.toDouble() / loadDictionary().size.toDouble() * 100
