@@ -13,6 +13,7 @@ fun main() {
         |0-Выход
     """.trimMargin()
         )
+
         val choice = readln()
         when (choice) {
             "1" -> println("Учить слова")
