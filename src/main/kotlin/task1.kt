@@ -14,7 +14,7 @@ fun main() {
         val choice = readln()
         when (choice) {
             "1" -> println("Учить слова")
-            "2" -> println("выучено $learned из $allWords | ${percent.toInt()}%")
+            "2" -> println(getStatistic())
             "0" -> break
             else -> println("введите пункт меню")
         }
@@ -39,6 +39,11 @@ fun loadDictionary(): List<Word> {
     }
     return dictionary.toList()
 }
-val learned = loadDictionary().filter { it.correctAnswerCount >= 3 }.size
-val allWords = loadDictionary().size
-val percent = loadDictionary().filter { it.correctAnswerCount >= 3 }.size.toDouble() / loadDictionary().size.toDouble() * 100
+fun getStatistic(): String{
+    val learned = loadDictionary().filter { it.correctAnswerCount >= MIN_WORDS }.size
+     val allWords = loadDictionary().size
+     val percent = loadDictionary().filter { it.correctAnswerCount >= MIN_WORDS }.size.toDouble() / loadDictionary().size.toDouble() * PERCENT
+return "выучено $learned из $allWords |${percent.toInt()}%"
+}
+const val MIN_WORDS = 3
+const val PERCENT = 100
