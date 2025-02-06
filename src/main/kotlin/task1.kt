@@ -41,12 +41,14 @@ fun loadDictionary(): List<Word> {
     }
     return dictionary.toList()
 }
-fun getStatistic(): String{
+
+fun getStatistic(): String {
     val learned = loadDictionary().filter { it.correctAnswerCount >= MIN_WORDS }.size
-     val allWords = loadDictionary().size
-     val percent = loadDictionary().filter { it.correctAnswerCount >= MIN_WORDS }.size.toDouble() / loadDictionary().size.toDouble() * PERCENT
-return "выучено $learned из $allWords |${percent.toInt()}%"
+    val allWords = loadDictionary().size
+    val percent = learned.toDouble() / allWords.toDouble() * PERCENT
+    return "выучено $learned из $allWords |${percent.toInt()}%"
 }
+
 const val MIN_WORDS = 3
 const val PERCENT = 100
 
