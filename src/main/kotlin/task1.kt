@@ -1,3 +1,5 @@
+package org.example
+
 import java.io.File
 import kotlin.collections.mutableListOf
 
@@ -47,3 +49,4 @@ return "выучено $learned из $allWords |${percent.toInt()}%"
 }
 const val MIN_WORDS = 3
 const val PERCENT = 100
+
