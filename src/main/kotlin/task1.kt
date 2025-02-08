@@ -16,12 +16,27 @@ fun main() {
 
         val choice = readln()
         when (choice) {
-            "1" -> println("Учить слова")
+            "1" -> learnWords()
             "2" -> println(getStatistic())
             "0" -> break
             else -> println("введите пункт меню")
         }
     }
+}
+
+fun learnWords() {
+    val notLearnedList = loadDictionary().filter { it.correctAnswerCount < 3 }
+    var questionWords = notLearnedList.take(4).shuffled()
+    if (notLearnedList != emptyList<Word>()) {
+        for (i in questionWords) {
+            questionWords = questionWords.shuffled()
+            val correctAnswer = i.translate
+            println("${i.origin}:")
+            questionWords.mapIndexed { index, word -> println("${index + 1} ${word.translate}") }
+            readln()
+        }
+    } else println("все слова выучены")
+
 }
 
 data class Word(
