@@ -16,7 +16,7 @@ fun main() {
 
         val choice = readln()
         when (choice) {
-            "1" -> learnWords()
+            "1" -> while (true) learnWords()
             "2" -> println(getStatistic())
             "0" -> break
             else -> println("введите пункт меню")
@@ -25,9 +25,10 @@ fun main() {
 }
 
 fun learnWords() {
-    val notLearnedList = loadDictionary().filter { it.correctAnswerCount < 3 }
-    var questionWords = notLearnedList.take(4).shuffled()
-    if (notLearnedList != emptyList<Word>()) {
+    val notLearnedList = loadDictionary().filter { it.correctAnswerCount < MIN_WORDS }
+    val notLearnedFirstFour = notLearnedList.take(4)
+    var questionWords = notLearnedFirstFour.shuffled()
+    if (notLearnedList.isNotEmpty()) {
         for (i in questionWords) {
             questionWords = questionWords.shuffled()
             val correctAnswer = i.translate
