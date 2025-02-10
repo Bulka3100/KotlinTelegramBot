@@ -5,7 +5,6 @@ import java.util.Dictionary
 import kotlin.collections.mutableListOf
 
 fun main() {
-
     while (true) {
         println(
             """Меню:
@@ -25,6 +24,7 @@ fun main() {
 }
 
 fun learnWords() {
+    val dictionary= loadDictionary()
     val notLearnedList = loadDictionary().filter { it.correctAnswerCount < MIN_WORDS }
     val notLearnedFirstFour = notLearnedList.take(4)
     var questionWords = notLearnedFirstFour.shuffled()
@@ -42,11 +42,12 @@ fun learnWords() {
                 correctAnswer -> {
                     println("правильно")
                     i.correctAnswerCount++
-                    saveDictionary(loadDictionary())
+                    saveDictionary(dictionary)
                 }
 
                 else -> println("неправильно! ${i.origin} это ${i.translate}")
             }
+
         }
     } else println("все слова выучены")
 
@@ -79,8 +80,8 @@ fun getStatistic(): String {
 
 }
 fun saveDictionary(dictionary: List<Word>) {
-
-
+val wordsFile = File("words.txt")
+wordsFile.writeText(dictionary.joinToString("\n") {word-> "${word.origin}|${word.translate}|${word.correctAnswerCount}"})
 }
 
 const val MIN_WORDS = 3
