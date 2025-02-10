@@ -1,6 +1,7 @@
 package org.example
 
 import java.io.File
+import java.util.Dictionary
 import kotlin.collections.mutableListOf
 
 fun main() {
@@ -13,10 +14,9 @@ fun main() {
         |0-Выход
     """.trimMargin()
         )
-
         val choice = readln()
         when (choice) {
-            "1" -> while (true) learnWords()
+            "1" -> while (loadDictionary().filter { it.correctAnswerCount < MIN_WORDS }.isNotEmpty()) learnWords()
             "2" -> println(getStatistic())
             "0" -> break
             else -> println("введите пункт меню")
@@ -31,17 +31,29 @@ fun learnWords() {
     if (notLearnedList.isNotEmpty()) {
         for (i in questionWords) {
             questionWords = questionWords.shuffled()
-            val correctAnswer = i.translate
+            val correctAnswer = questionWords.indexOf(i) + 1
             println("${i.origin}:")
             questionWords.mapIndexed { index, word -> println("${index + 1} ${word.translate}") }
-            readln()
+            println("--------")
+            println("0 - Меню")
+            val userAnswerInput = readln().toInt()
+            when (userAnswerInput) {
+                0 -> return
+                correctAnswer -> {
+                    println("правильно")
+                    i.correctAnswerCount++
+                    saveDictionary(loadDictionary())
+                }
+
+                else -> println("неправильно! ${i.origin} это ${i.translate}")
+            }
         }
     } else println("все слова выучены")
 
 }
 
 data class Word(
-    val correctAnswerCount: Int = 0,
+    var correctAnswerCount: Int = 0,
     val origin: String,
     val translate: String,
 )
@@ -64,6 +76,11 @@ fun getStatistic(): String {
     val allWords = loadDictionary().size
     val percent = learned.toDouble() / allWords.toDouble() * PERCENT
     return "выучено $learned из $allWords |${percent.toInt()}%"
+
+}
+fun saveDictionary(dictionary: List<Word>) {
+
+
 }
 
 const val MIN_WORDS = 3
