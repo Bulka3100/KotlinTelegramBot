@@ -23,7 +23,7 @@ fun main() {
 }
 
 fun learnWords() {
-    val dictionary= loadDictionary()
+    val dictionary = loadDictionary()
     val notLearnedList = dictionary.filter { it.correctAnswerCount < MIN_WORDS }
     val notLearnedFirstFour = notLearnedList.take(4)
     var questionWords = notLearnedFirstFour.shuffled()
@@ -78,9 +78,10 @@ fun getStatistic(): String {
     return "выучено $learned из $allWords |${percent.toInt()}%"
 
 }
+
 fun saveDictionary(dictionary: List<Word>) {
-val wordsFile = File("words.txt")
-wordsFile.writeText(dictionary.joinToString("\n") {word-> "${word.origin}|${word.translate}|${word.correctAnswerCount}"})
+    val wordsFile = File("words.txt")
+    wordsFile.writeText(dictionary.joinToString("\n") { word -> "${word.origin}|${word.translate}|${word.correctAnswerCount}" })
 }
 
 const val MIN_WORDS = 3
