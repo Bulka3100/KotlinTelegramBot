@@ -1,7 +1,6 @@
 package org.example
 
 import java.io.File
-import java.util.Dictionary
 import kotlin.collections.mutableListOf
 
 fun main() {
@@ -25,7 +24,7 @@ fun main() {
 
 fun learnWords() {
     val dictionary= loadDictionary()
-    val notLearnedList = loadDictionary().filter { it.correctAnswerCount < MIN_WORDS }
+    val notLearnedList = dictionary.filter { it.correctAnswerCount < MIN_WORDS }
     val notLearnedFirstFour = notLearnedList.take(4)
     var questionWords = notLearnedFirstFour.shuffled()
     if (notLearnedList.isNotEmpty()) {
