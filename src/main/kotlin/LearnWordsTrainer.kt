@@ -1,8 +1,14 @@
 package org.example
 
 import java.io.File
-
-data class Word(var correctAnswerCount: Int = 0, val origin: String, val translate: String)
+data class Question(
+    var variants: List<Word>,
+)
+data class Word(
+    var correctAnswerCount: Int = 0,
+    val origin: String,
+    val translate: String
+)
 
 class LearnWordsTrainer {
 
@@ -27,40 +33,22 @@ class LearnWordsTrainer {
     }
 
     fun getStatistic(): String {
-        val learned = loadDictionary().filter { it.correctAnswerCount >= MIN_WORDS }.size
-        val allWords = loadDictionary().size
+        val learned = dictionary.filter { it.correctAnswerCount >= MIN_WORDS }.size
+        val allWords = dictionary.size
         val percent = learned.toDouble() / allWords.toDouble() * PERCENT
         return "выучено $learned из $allWords |${percent.toInt()}%"
 
     }
 
-    fun learnWords() {
+
+    fun getNextQuestion(): Question? {
         val notLearnedList = dictionary.filter { it.correctAnswerCount < MIN_WORDS }
+        if(notLearnedList.isEmpty()) return null
         val notLearnedFirstFour = notLearnedList.take(4)
         var questionWords = notLearnedFirstFour.shuffled()
-        if (notLearnedList.isNotEmpty()) {
-            for (i in questionWords) {
-                questionWords = questionWords.shuffled()
-                val correctAnswer = questionWords.indexOf(i) + 1
-                println("${i.origin}:")
-                questionWords.mapIndexed { index, word -> println("${index + 1}- ${word.translate}") }
-                println("--------")
-                println("0 - Меню")
-                val userAnswerInput = readln().toInt()
-                when (userAnswerInput) {
-                    0 -> return
-                    correctAnswer -> {
-                        println("правильно")
-                        i.correctAnswerCount++
-                        saveDictionary(dictionary)
-                    }
 
-                    else -> println("неправильно! ${i.origin} это ${i.translate}")
-                }
-
-            }
-        } else println("все слова выучены")
-
+        return Question(
+            variants = questionWords,
+        )
     }
 }
-
