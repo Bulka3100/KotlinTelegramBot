@@ -1,9 +1,12 @@
 package org.example
 
 import java.io.File
+
 data class Question(
     var variants: List<Word>,
+    val correctAnswer: Word,
 )
+
 data class Word(
     var correctAnswerCount: Int = 0,
     val origin: String,
@@ -11,7 +14,7 @@ data class Word(
 )
 
 class LearnWordsTrainer {
-
+    private var question: Question? = null
     val dictionary = loadDictionary()
 
     fun loadDictionary(): List<Word> {
@@ -43,12 +46,29 @@ class LearnWordsTrainer {
 
     fun getNextQuestion(): Question? {
         val notLearnedList = dictionary.filter { it.correctAnswerCount < MIN_WORDS }
-        if(notLearnedList.isEmpty()) return null
+        if (notLearnedList.isEmpty()) return null
         val notLearnedFirstFour = notLearnedList.take(4)
         var questionWords = notLearnedFirstFour.shuffled()
+        val correctAnswer = questionWords.random()
 
-        return Question(
+        question = Question(
             variants = questionWords,
+            correctAnswer = correctAnswer
         )
+        return question
     }
+
+    fun checkAnswer(userAnswerIndex: Int?): Boolean {
+        return question?.let {
+            val correctAnswerId = it.variants.indexOf(it.correctAnswer)
+            if (correctAnswerId == userAnswerIndex) {
+                it.correctAnswer.correctAnswerCount++
+                saveDictionary(dictionary)
+                true
+            } else {
+                false
+            }
+        } ?: false
+    }
+
 }
