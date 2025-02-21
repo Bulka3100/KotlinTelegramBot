@@ -13,21 +13,30 @@ data class Word(
     val translate: String
 )
 
-class LearnWordsTrainer {
+class LearnWordsTrainer(private val learnedAnswerCount: Int = 3, val countOfQuestion: Int = 4) {
     private var question: Question? = null
     val dictionary = loadDictionary()
 
     fun loadDictionary(): List<Word> {
-        val dictionary = mutableListOf<Word>()
-        val wordsFile = File("words.txt")
-        wordsFile.forEachLine { line ->
-            val line = line.split("|")
-            val word =
-                Word(origin = line[0], translate = line[1], correctAnswerCount = line.getOrNull(2)?.toIntOrNull() ?: 0)
-            dictionary.add(word)
+        try {
+            val dictionary = mutableListOf<Word>()
+            val wordsFile = File("words.txt")
+            wordsFile.forEachLine { line ->
+                val line = line.split("|")
+                val word =
+                    Word(
+                        origin = line[0],
+                        translate = line[1],
+                        correctAnswerCount = line.getOrNull(2)?.toIntOrNull() ?: 0
+                    )
+                dictionary.add(word)
 
+            }
+            return dictionary.toList()
+        } catch (e: IndexOutOfBoundsException) {
+            throw IllegalArgumentException("некорректный файл")
         }
-        return dictionary.toList()
+
     }
 
     fun saveDictionary(dictionary: List<Word>) {
@@ -36,7 +45,7 @@ class LearnWordsTrainer {
     }
 
     fun getStatistic(): String {
-        val learned = dictionary.filter { it.correctAnswerCount >= MIN_WORDS }.size
+        val learned = dictionary.filter { it.correctAnswerCount >= learnedAnswerCount }.size
         val allWords = dictionary.size
         val percent = learned.toDouble() / allWords.toDouble() * PERCENT
         return "выучено $learned из $allWords |${percent.toInt()}%"
@@ -45,10 +54,15 @@ class LearnWordsTrainer {
 
 
     fun getNextQuestion(): Question? {
-        val notLearnedList = dictionary.filter { it.correctAnswerCount < MIN_WORDS }
+        val notLearnedList = dictionary.filter { it.correctAnswerCount < learnedAnswerCount }
         if (notLearnedList.isEmpty()) return null
-        val notLearnedFirstFour = notLearnedList.take(4)
-        var questionWords = notLearnedFirstFour.shuffled()
+
+        val questionWords = if (notLearnedList.size < countOfQuestion) {
+            val learnedList = dictionary.filter { it.correctAnswerCount >= learnedAnswerCount }.shuffled()
+            learnedList.take(countOfQuestion - notLearnedList.size) + notLearnedList.shuffled().take(countOfQuestion)
+        } else {
+            notLearnedList.shuffled().take(countOfQuestion)
+        }.shuffled()
         val correctAnswer = questionWords.random()
 
         question = Question(
