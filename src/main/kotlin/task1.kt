@@ -8,7 +8,12 @@ fun Question.questionToString(question: Question): String {
 }
 
 fun main() {
-    val trainer = LearnWordsTrainer()
+    val trainer = try {
+        LearnWordsTrainer()
+    } catch (e: Exception) {
+        println("невозможно загрузить словарь")
+        return
+    }
     while (true) {
         println(
             """Меню:
@@ -23,7 +28,7 @@ fun main() {
                 val question = trainer.getNextQuestion()
                 if (question != null) {
                     println(question.questionToString(question))
-                    val userAnswerInput = readln().toInt()
+                    val userAnswerInput = readln().toIntOrNull()
                     if (userAnswerInput == 0) break
                     if (trainer.checkAnswer(userAnswerInput?.minus((1)))) {
                         println("верно")
@@ -43,8 +48,6 @@ fun main() {
     }
 }
 
-
-const val MIN_WORDS = 3
 const val PERCENT = 100
 
 
