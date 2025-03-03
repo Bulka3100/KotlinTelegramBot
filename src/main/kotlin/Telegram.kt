@@ -20,15 +20,21 @@ fun main(args: Array<String>) {
 
         val updates = getUpdates(botToken, updateId)
         println(updates)
-        val idRegex : Regex = "\"id\":\"(.+?) \"".toRegex()
+        val idRegex: Regex = "\"id\":(.+?)".toRegex() // Исправлено!
         val matchResultId = idRegex.find(updates)
-        val groupsId = matchResultId?.groups
-        val chatId = groupsId?.get(1)?.value!!.toInt()
-        if (chatId != null) {
-            updateId = chatId + 1
-            println("Chat ID: $chatId")
+
+        // Использование безопасной проверки на null
+        if (matchResultId != null) {
+            val chatId = matchResultId.groups[1]?.value?.toInt() // Здесь захватываем значение ID
+
+            if (chatId != null) {
+                updateId = chatId + 1
+                println("Chat ID: $chatId")
+            } else {
+                println("Chat ID not found.")
+            }
         } else {
-            println("Chat ID not found.")
+            println("No match for Chat ID found.")
         }
 
         val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
