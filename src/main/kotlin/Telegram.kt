@@ -15,21 +15,27 @@ fun main(args: Array<String>) {
     val responseGet: HttpResponse<String> = client.send(requestGet, HttpResponse.BodyHandlers.ofString())
     println(responseGet.body())
 
-while (true) {
-    Thread.sleep(2000)
+    while (true) {
+        Thread.sleep(2000)
 
-    val updates = getUpdates(botToken, updateId)
-    println(updates)
+        val updates = getUpdates(botToken, updateId)
+        println(updates)
 
-    val startUpdateId = updates.lastIndexOf("update_id")
-    val endUpdateId = updates.lastIndexOf(",\n\"message\"")
+        val startUpdateId = updates.lastIndexOf("update_id")
+        val endUpdateId = updates.lastIndexOf(",\n\"message\"")
 
-    if (startUpdateId == -1 || endUpdateId == -1) continue
-    println(updates.substring(startUpdateId, endUpdateId))
+        if (startUpdateId == -1 || endUpdateId == -1) continue
+        println(updates.substring(startUpdateId, endUpdateId))
 
-    val updateIdString = updates.substring(startUpdateId + 11, endUpdateId)
-    updateId = updateIdString.toInt() + 1
-}
+        val updateIdString = updates.substring(startUpdateId + 11, endUpdateId)
+        updateId = updateIdString.toInt() + 1
+
+        val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+        val matchResult: MatchResult? = messageTextRegex.find(updates)
+        val groups = matchResult?.groups
+        val text = groups?.get(1)?.value
+        println(text)
+    }
 }
 
 fun getUpdates(botToken: String, updateId: Int): String {
