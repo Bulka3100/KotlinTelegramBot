@@ -20,20 +20,22 @@ fun main(args: Array<String>) {
 
         val updates = getUpdates(botToken, updateId)
         println(updates)
-
-        val startUpdateId = updates.lastIndexOf("update_id")
-        val endUpdateId = updates.lastIndexOf(",\n\"message\"")
-
-        if (startUpdateId == -1 || endUpdateId == -1) continue
-        println(updates.substring(startUpdateId, endUpdateId))
-
-        val updateIdString = updates.substring(startUpdateId + 11, endUpdateId)
-        updateId = updateIdString.toInt() + 1
+        val idRegex : Regex = "\"id\":\"(.+?) \"".toRegex()
+        val matchResultId = idRegex.find(updates)
+        val groupsId = matchResultId?.groups
+        val chatId = groupsId?.get(1)?.value!!.toInt()
+        if (chatId != null) {
+            updateId = chatId + 1
+            println("Chat ID: $chatId")
+        } else {
+            println("Chat ID not found.")
+        }
 
         val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
-        val matchResult: MatchResult? = messageTextRegex.find(updates)
+        val matchResult = messageTextRegex.find(updates)
         val groups = matchResult?.groups
         val text = groups?.get(1)?.value
+
         println(text)
     }
 }
