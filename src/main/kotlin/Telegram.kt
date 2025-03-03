@@ -15,27 +15,22 @@ fun main(args: Array<String>) {
     val responseGet: HttpResponse<String> = client.send(requestGet, HttpResponse.BodyHandlers.ofString())
     println(responseGet.body())
 
+    val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+    val idRegex = "\"update_id\":(\\d+)".toRegex()
+
     while (true) {
         Thread.sleep(2000)
 
         val updates = getUpdates(botToken, updateId)
         println(updates)
 
-        val idRegex = "\"update_id\":(\\d+)".toRegex()
         val matchResultId = idRegex.find(updates)
+        val updateIdValue = matchResultId?.groups[1]?.value?.toIntOrNull()?.plus(1) ?: continue
+        println("Update ID: $updateIdValue")
 
-        if (matchResultId != null) {
-            val updateIdValue = matchResultId.groups[1]?.value?.toInt()
-            println("Update ID: $updateIdValue")
-            if (updateIdValue != null) {
-                updateId = updateIdValue + 1
-            }
-        } else {
-            println("No new updates found")
-        }
+        updateId = updateIdValue
 
 
-        val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
         val matchResult = messageTextRegex.find(updates)
         val groups = matchResult?.groups
         val text = groups?.get(1)?.value
