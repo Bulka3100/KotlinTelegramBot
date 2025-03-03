@@ -20,12 +20,18 @@ fun main(args: Array<String>) {
 
         val updates = getUpdates(botToken, updateId)
         println(updates)
-        val idRegex: Regex = "\"update_id\":(.+?)".toRegex()
+
+        val idRegex = "\"update_id\":(\\d+)".toRegex()
         val matchResultId = idRegex.find(updates)
 
         if (matchResultId != null) {
             val updateIdValue = matchResultId.groups[1]?.value?.toInt()
             println("Update ID: $updateIdValue")
+            if (updateIdValue != null) {
+                updateId = updateIdValue + 1
+            }
+        } else {
+            println("No new updates found")
         }
 
 
