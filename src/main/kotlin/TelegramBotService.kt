@@ -21,4 +21,5 @@ class TelegramBotService {
         val httpRequest: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlSendMessage)).build()
         client.send(httpRequest, HttpResponse.BodyHandlers.ofString())
     }
+
 }
