@@ -7,7 +7,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
 fun main(args: Array<String>) {
-    val tgBot = TelegramBotService()
+    val tgBot = TelegramBotService(args[0])
     val botToken = args[0]
     val urlGetMe = "https://api.telegram.org/bot$botToken/getMe"
     var updateId = 0
@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
     while (true) {
         Thread.sleep(2000)
 
-        val updates = tgBot.getUpdates(botToken, updateId)
+        val updates = tgBot.getUpdates(updateId)
         println(updates)
 
         val matchResultId = idRegex.find(updates)
@@ -40,10 +40,10 @@ fun main(args: Array<String>) {
         println(text)
 
         val matchResultChatId = chatIdRegex.find(updates)
-        val chatId = matchResultChatId?.groups[1]?.value?.toIntOrNull()
+        val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull()
         println(chatId)
         if (text == "Hello")
-            tgBot.sendMessage(botToken, chatId, "Hello")
+            tgBot.sendMessage(chatId, "Hello")
     }
 
 }
