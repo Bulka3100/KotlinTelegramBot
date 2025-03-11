@@ -48,10 +48,15 @@ fun main(args: Array<String>) {
         if (text == "/start")
             tgBot.sendMenu(chatId)
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
-        if (data == "statistics") {
-            tgBot.sendMessage(chatId, "выучено 10 из 10 слов | 100%")
+        if (data == STATISTICS_CLICKED) {
+            tgBot.sendMessage(chatId, trainer.getStatistic())
+        }
+        if (data == LEARN_WORDS_CLICKED) {
+
         }
     }
 
 }
+const val STATISTICS_CLICKED = "Statistics"
+const val LEARN_WORDS_CLICKED = "Learn_words"
 
