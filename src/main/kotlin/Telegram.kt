@@ -78,7 +78,6 @@ fun main(args: Array<String>) {
     }
 }
 
-
 val trainer = LearnWordsTrainer()
 const val STATISTICS_CLICKED = "Statistics"
 const val LEARN_WORDS_CLICKED = "Learn_words"
