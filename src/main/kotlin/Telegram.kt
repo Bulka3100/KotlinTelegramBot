@@ -68,7 +68,7 @@ fun main(args: Array<String>) {
                         tgBot.sendMessage(chatId, "Верно!")
                         tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
                     } else {
-                        tgBot.sendMessage(chatId, "неверно!")
+                        tgBot.sendMessage(chatId, "неверно! ")
                     }
                 }
             }
