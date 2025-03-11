@@ -19,6 +19,8 @@ fun main(args: Array<String>) {
     val chatIdRegex = "\"chat\":\\{\"id\":(\\d+)".toRegex()
     val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
     val idRegex = "\"update_id\":(\\d+)".toRegex()
+    val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
+
 
     while (true) {
         Thread.sleep(2000)
@@ -37,13 +39,15 @@ fun main(args: Array<String>) {
         val groups = matchResult?.groups
         val text = groups?.get(1)?.value
 
+
         println(text)
 
         val matchResultChatId = chatIdRegex.find(updates)
         val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull()
         println(chatId)
-        if (text == "Hello")
-            tgBot.sendMessage(chatId, "Hello")
+        if (text == "Menu")
+            tgBot.sendMenu(chatId)
+        val data =dataRegex.find(updates)?.groups?.get(1)?.value
     }
 
 }

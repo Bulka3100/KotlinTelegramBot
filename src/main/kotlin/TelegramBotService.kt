@@ -17,10 +17,34 @@ class TelegramBotService(
         return response.body()
     }
 
-    fun sendMessage(chatId: Long?, text: String) {
-        val urlSendMessage = "$BASE_API$tokenBot/sendMessage?chat_id=$chatId&text=$text"
-        val httpRequest: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlSendMessage)).build()
-        client.send(httpRequest, HttpResponse.BodyHandlers.ofString())
+    fun sendMenu(chatId: Long?) {
+        val urlSendMessage = "$BASE_API$tokenBot/sendMessage"
+        val sendMenuBody ="""
+            {
+                "chat_id": $chatId,
+                "text": "оcновное меню",
+                "reply_markup":{
+                    "inline_keyboard":[
+                        [
+                            {
+                                "text":"изучить слова",
+                                "callback_data":"data1"
+                            },
+                             {
+                                "text":"изучить слова",
+                                "callback_data":"data1"
+                            }
+                        ]
+                    ]
+                }
+
+            }
+        """.trimIndent()
+        val request: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlSendMessage))
+            .header("Content-type","application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(sendMenuBody))
+            .build()
+        client.send(request, HttpResponse.BodyHandlers.ofString())
     }
 
 }
