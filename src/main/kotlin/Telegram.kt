@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
     val idRegex = "\"update_id\":(\\d+)".toRegex()
     val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
 
-
+    val trainer = LearnWordsTrainer()
     while (true) {
         Thread.sleep(2000)
 
@@ -45,9 +45,12 @@ fun main(args: Array<String>) {
         val matchResultChatId = chatIdRegex.find(updates)
         val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull()
         println(chatId)
-        if (text == "Menu")
+        if (text == "/start")
             tgBot.sendMenu(chatId)
-        val data =dataRegex.find(updates)?.groups?.get(1)?.value
+        val data = dataRegex.find(updates)?.groups?.get(1)?.value
+        if (data == "statistics") {
+            tgBot.sendMessage(chatId, "выучено 10 из 10 слов | 100%")
+        }
     }
 
 }
