@@ -70,6 +70,7 @@ fun main(args: Array<String>) {
                     } else {
 //                        не понимаю как поставить  нужную форму в неврный ответ
                         tgBot.sendMessage(chatId, "неверно! ")
+                        tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
                     }
                 }
             }
