@@ -21,7 +21,6 @@ fun main(args: Array<String>) {
     val idRegex = "\"update_id\":(\\d+)".toRegex()
     val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
 
-    val trainer = LearnWordsTrainer()
     while (true) {
         Thread.sleep(2000)
 
@@ -45,18 +44,43 @@ fun main(args: Array<String>) {
         val matchResultChatId = chatIdRegex.find(updates)
         val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull()
         println(chatId)
-        if (text == "/start")
-            tgBot.sendMenu(chatId)
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
-        if (data == STATISTICS_CLICKED) {
-            tgBot.sendMessage(chatId, trainer.getStatistic())
-        }
-        if (data == LEARN_WORDS_CLICKED) {
+        if (chatId != null) {
+            when {
+                text == "/start" -> {
+                    tgBot.sendMenu(chatId)
+                }
+
+                data == STATISTICS_CLICKED -> {
+                    tgBot.sendMessage(chatId, trainer.getStatistic())
+                }
+
+                data == LEARN_WORDS_CLICKED -> {
+                    val newQuestion = trainer.getNextQuestion()
+                    tgBot.sendQuestion(chatId, newQuestion)
+                }
+
+                data != null && data.startsWith(CALLBACK_DATA_ANSWER_PREFIX) -> {
+                    val answerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
+                    println(answerIndex)
+                    val isRight = trainer.checkAnswer(answerIndex)
+                    if (isRight) {
+                        tgBot.sendMessage(chatId, "Верно!")
+                        tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
+                    } else {
+//                        не понимаю как поставить  нужную форму в неврный ответ
+                        tgBot.sendMessage(chatId, "неверно! ")
+                        tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
+                    }
+                }
+            }
+
 
         }
     }
-
 }
+
+val trainer = LearnWordsTrainer()
 const val STATISTICS_CLICKED = "Statistics"
 const val LEARN_WORDS_CLICKED = "Learn_words"
 
