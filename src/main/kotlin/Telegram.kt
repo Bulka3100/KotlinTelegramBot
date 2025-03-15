@@ -68,6 +68,7 @@ fun main(args: Array<String>) {
                         tgBot.sendMessage(chatId, "Верно!")
                         tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
                     } else {
+//                        не понимаю как поставить  нужную форму в неврный ответ
                         tgBot.sendMessage(chatId, "неверно! ")
                     }
                 }
