@@ -7,6 +7,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
 fun main(args: Array<String>) {
+    val trainer = LearnWordsTrainer()
     val tgBot = TelegramBotService(args[0])
     val botToken = args[0]
     val urlGetMe = "https://api.telegram.org/bot$botToken/getMe"
@@ -42,7 +43,7 @@ fun main(args: Array<String>) {
         println(text)
 
         val matchResultChatId = chatIdRegex.find(updates)
-        val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull()
+        val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull() ?: continue
         println(chatId)
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
         if (chatId != null) {
@@ -80,7 +81,7 @@ fun main(args: Array<String>) {
     }
 }
 
-val trainer = LearnWordsTrainer()
+
 const val STATISTICS_CLICKED = "Statistics"
 const val LEARN_WORDS_CLICKED = "Learn_words"
 
