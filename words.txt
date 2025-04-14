@@ -1,6 +1,6 @@
 hello|привет|5
 dog|собака|6
 cat|кошка|3
-thank you|спасибо1|5
-tiger|тигр|4
-sister|сестра|7
+thank you|спасибо1|0
+tiger|тигр|1
+sister|сестра|0

@@ -42,11 +42,11 @@ fun main(args: Array<String>) {
 
         println(text)
 
-        val matchResultChatId = chatIdRegex.find(updates)
+        val matchResultChatId = chatIdRegex.find(updates) ?: continue
         val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull() ?: continue
         println(chatId)
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
-        if (chatId != null) {
+
             when {
                 text == "/start" -> {
                     tgBot.sendMenu(chatId)
@@ -70,7 +70,7 @@ fun main(args: Array<String>) {
                         tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
                     } else {
 //                        не понимаю как поставить  нужную форму в неврный ответ
-                        tgBot.sendMessage(chatId, "неверно! ")
+                        tgBot.sendMessage(chatId, "неверно!")
                         tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
                     }
                 }
@@ -79,7 +79,7 @@ fun main(args: Array<String>) {
 
         }
     }
-}
+
 
 
 const val STATISTICS_CLICKED = "Statistics"
