@@ -40,6 +40,7 @@ data class Update(
     val callbackQuery: CallbackQuery? = null,
 )
 
+
 @Serializable
 data class Response(
     @SerialName("result")
