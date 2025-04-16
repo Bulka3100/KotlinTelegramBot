@@ -1,87 +1,111 @@
 package org.example
 
-import jdk.internal.net.http.HttpRequestImpl
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+
+@Serializable
+data class Message(
+    @SerialName("text")
+    val text: String,
+    @SerialName("chat")
+    val chat: Chat,
+)
+
+@Serializable
+data class CallbackQuery(
+    @SerialName("data")
+    val data: String? = null,
+    @SerialName("message")
+    val message: Message? = null,
+)
+
+@Serializable
+data class Chat(
+    @SerialName("id")
+    val id: Long,
+)
+
+@Serializable
+data class Update(
+    @SerialName("update_id")
+    val updateId: Long,
+    @SerialName("message")
+    val message: Message? = null,
+    @SerialName("callback_query")
+    val callbackQuery: CallbackQuery? = null,
+)
+
+@Serializable
+data class Response(
+    @SerialName("result")
+    val result: List<Update>,
+)
 
 fun main(args: Array<String>) {
     val trainer = LearnWordsTrainer()
     val tgBot = TelegramBotService(args[0])
     val botToken = args[0]
     val urlGetMe = "https://api.telegram.org/bot$botToken/getMe"
-    var updateId = 0
+    var updateId = 0 // Глобальная переменная updateId
+    var lastUpdateId = 0L
     val client: HttpClient = HttpClient.newBuilder().build()
     val requestGet: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlGetMe)).build()
     val responseGet: HttpResponse<String> = client.send(requestGet, HttpResponse.BodyHandlers.ofString())
     println(responseGet.body())
-
-    val chatIdRegex = "\"chat\":\\{\"id\":(\\d+)".toRegex()
-    val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
-    val idRegex = "\"update_id\":(\\d+)".toRegex()
-    val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
+    val json = Json {
+        ignoreUnknownKeys = true
+    }
 
     while (true) {
         Thread.sleep(2000)
 
-        val updates = tgBot.getUpdates(updateId)
-        println(updates)
+        val responseString = tgBot.getUpdates(updateId)
+        println(responseString)
+        val response: Response = json.decodeFromString(responseString)
+        val updates = response.result
 
-        val matchResultId = idRegex.find(updates)
-        val updateIdValue = matchResultId?.groups[1]?.value?.toIntOrNull()?.plus(1) ?: continue
-        println("Update ID: $updateIdValue")
+        val firstUpdate = updates.firstOrNull() ?: continue
+        updateId = firstUpdate.updateId.toInt() + 1 // Обновляем глобальный updateId
 
-        updateId = updateIdValue
-
-
-        val matchResult = messageTextRegex.find(updates)
-        val groups = matchResult?.groups
-        val text = groups?.get(1)?.value
-
-
-        println(text)
-
-        val matchResultChatId = chatIdRegex.find(updates) ?: continue
-        val chatId = matchResultChatId?.groups[1]?.value?.toLongOrNull() ?: continue
+        val message = firstUpdate.message?.text
+        val chatId = firstUpdate.message?.chat?.id ?: firstUpdate.callbackQuery?.message?.chat?.id
         println(chatId)
-        val data = dataRegex.find(updates)?.groups?.get(1)?.value
+        val data = firstUpdate.callbackQuery?.data
 
-            when {
-                text == "/start" -> {
-                    tgBot.sendMenu(chatId)
-                }
-
-                data == STATISTICS_CLICKED -> {
-                    tgBot.sendMessage(chatId, trainer.getStatistic())
-                }
-
-                data == LEARN_WORDS_CLICKED -> {
-                    val newQuestion = trainer.getNextQuestion()
-                    tgBot.sendQuestion(chatId, newQuestion)
-                }
-
-                data != null && data.startsWith(CALLBACK_DATA_ANSWER_PREFIX) -> {
-                    val answerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
-                    println(answerIndex)
-                    val isRight = trainer.checkAnswer(answerIndex)
-                    if (isRight) {
-                        tgBot.sendMessage(chatId, "Верно!")
-                        tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
-                    } else {
-//                        не понимаю как поставить  нужную форму в неврный ответ
-                        tgBot.sendMessage(chatId, "неверно!")
-                        tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
-                    }
-                }
+        when {
+            message == "/start" -> {
+                tgBot.sendMenu(chatId)
             }
 
+            data == STATISTICS_CLICKED -> {
+                tgBot.sendMessage(chatId, trainer.getStatistic())
+            }
 
+            data == LEARN_WORDS_CLICKED -> {
+                val newQuestion = trainer.getNextQuestion()
+                tgBot.sendQuestion(chatId, newQuestion)
+            }
+
+            data != null && data.startsWith(CALLBACK_DATA_ANSWER_PREFIX) -> {
+                val answerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
+                println(answerIndex)
+                val isRight = trainer.checkAnswer(answerIndex)
+                if (isRight) {
+                    tgBot.sendMessage(chatId, "Верно!")
+                    tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
+                } else {
+                    tgBot.sendMessage(chatId, "Неверно!")
+                    tgBot.checkNextQuestionAndSend(trainer, tgBot, chatId)
+                }
+            }
         }
     }
-
-
+}
 
 const val STATISTICS_CLICKED = "Statistics"
 const val LEARN_WORDS_CLICKED = "Learn_words"
-

@@ -1,12 +1,13 @@
 package org.example
 
+import kotlinx.serialization.Serializable
 import java.io.File
 
 data class Question(
     var variants: List<Word>,
     val correctAnswer: Word,
 )
-
+@Serializable
 data class Word(
     var correctAnswerCount: Int = 0,
     val origin: String,
